@@ -15,16 +15,23 @@ from tensorflow.keras import backend as K
 def rmse(y_true, y_pred):
     return K.sqrt(K.mean(K.square(y_pred - y_true)))
 
+def create_model(input_dim):
+    model = Sequential([
+        Dense(64, input_dim=input_dim, activation='relu'),
+        Dense(32, activation='relu'),
+        Dense(16, activation='relu'),
+        Dense(1)
+    ])
+    model.compile(optimizer='adam', loss='mean_squared_error')
+    return model
+    
 # สร้าง pipeline
-def create_pipeline():  # รับ X_train เป็น argument เพื่อหาขนาด input_dim
+def create_pipeline():
     categorical_features = ['Method', 'SellerG', 'CouncilArea', 'Regionname', 'Season', 'Suburb', 'Type']
-    numeric_features = ['Rooms', 'Distance', 'Bathroom', 'Car', 'Landsize', 'BuildingArea', 'YearBuilt', 'Lattitude', 'Longtitude', 'Propertycount', 'Age', 'Year', 'Month', 'Postcode']  # เพิ่ม features ที่เป็นตัวเลขทั้งหมด
-
+    numeric_features = ['Rooms', 'Distance', 'Bathroom', 'Car', 'Landsize', 'BuildingArea', 'YearBuilt', 'Lattitude', 'Longtitude', 'Propertycount', 'Age', 'Year', 'Month', 'Postcode']
 
     numeric_transformer = StandardScaler()
-
-    categorical_transformer = OneHotEncoder(handle_unknown='ignore')  # จัดการ unknown categories
-
+    categorical_transformer = OneHotEncoder(handle_unknown='ignore')
 
     preprocessor = ColumnTransformer(
         transformers=[
@@ -32,48 +39,48 @@ def create_pipeline():  # รับ X_train เป็น argument เพื่�
             ('cat', categorical_transformer, categorical_features)
         ])
 
-    def create_model(input_dim):
-        model = Sequential([
-            Dense(64, input_dim=input_dim, activation='relu'),
-            Dense(32, activation='relu'),
-            Dense(16, activation='relu'),
-            Dense(1)
-        ])
-        model.compile(optimizer='adam', loss='mean_squared_error')
-        return model
-
-    keras_regressor = KerasRegressor(build_fn=lambda: create_model(input_dim=X_train.shape[1]))
-
+    # สร้าง pipeline โดยยังไม่ระบุ regressor
     pipeline = Pipeline([
         ('preprocessor', preprocessor),
         ('regressor', None)
     ])
-    return pipeline
+    
+    return pipeline, numeric_features, categorical_features
 
 # โหลดหรือเทรน pipeline ของโมเดล
-@st.cache_resource  # ใช้ cache เพื่อไม่ให้เทรนโมเดลซ้ำทุกครั้ง
+@st.cache_resource
 def load_or_train_pipeline():
     try:
         pipeline = joblib.load("model_pipeline.pkl")
     except:
-        # การโหลดข้อมูลและการพรีโปรเซสซิ่ง
+        # โหลดข้อมูลและการพรีโปรเซสซิ่ง
         df_train = pd.read_csv("cleanhouse.csv")
         df_train = df_train.drop(columns=['Address', 'Date', 'Price'])
-        X_train = df_train
-
         y = pd.read_csv("cleanhouse.csv")['Price']
 
-        X_train, X_test, y_train, y_test = train_test_split(X_train, y, test_size=0.2, random_state=0)
-        pipeline = create_pipeline()
-        X_train_transformed = pipeline.named_steps['preprocessor'].fit_transform(X_train)
-        input_dim = X_train_transformed.shape[1]
-        keras_regressor = KerasRegressor(build_fn=lambda: create_model(input_dim=input_dim))  # สร้าง regressor ที่นี่!
-        pipeline.set_params(regressor=keras_regressor)  # แทรก regressor เข้าไปใน pipeline
-        pipeline.fit(X_train, y_train, regressor__validation_split=0.2, regressor__epochs=100, regressor__batch_size=32,
-                   regressor__callbacks=[EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)])
-
-        joblib.dump(pipeline, "model_pipeline.pkl")
+        # สร้าง pipeline และ preprocessor
+        pipeline, numeric_features, categorical_features = create_pipeline()
         
+        # Fit preprocessor และหา input_dim
+        X_train_transformed = pipeline.named_steps['preprocessor'].fit_transform(df_train)
+        input_dim = X_train_transformed.shape[1]
+        
+        # สร้างและเพิ่ม regressor เข้าไปใน pipeline
+        keras_regressor = KerasRegressor(
+            model=lambda: create_model(input_dim=input_dim),
+            epochs=100,
+            batch_size=32,
+            validation_split=0.2,
+            callbacks=[EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)]
+        )
+        pipeline.steps.append(('regressor', keras_regressor))
+        
+        # Train โมเดล
+        pipeline.fit(df_train, y)
+        
+        # บันทึกโมเดล
+        joblib.dump(pipeline, "model_pipeline.pkl")
+    
     return pipeline
 
 pipeline = load_or_train_pipeline()
