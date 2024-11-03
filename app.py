@@ -63,7 +63,7 @@ def load_or_train_pipeline():
 
         y = pd.read_csv("cleanhouse.csv")['Price']
 
-        # X_train, X_test, y_train, y_test = train_test_split(X_train, y, test_size=0.2, random_state=0)
+        X_train, X_test, y_train, y_test = train_test_split(X_train, y, test_size=0.2, random_state=0)
         pipeline = create_pipeline()
         X_train_transformed = pipeline.named_steps['preprocessor'].fit_transform(X_train)
         input_dim = X_train_transformed.shape[1]
