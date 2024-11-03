@@ -53,35 +53,6 @@ model, scaler = pipeline["model"], pipeline["scaler"]
 # Title and File Upload
 st.title("House Price Prediction App")
 
-# Prediction Form
-st.subheader("Enter the property details for prediction:")
-feature_inputs = {}
-# Replace these with the actual feature names and types
-feature_inputs['Rooms'] = st.number_input("Rooms", min_value=1, max_value=10, value=3)
-feature_inputs['Distance'] = st.number_input("Distance to CBD (km)", min_value=0.0, value=5.0)
-feature_inputs['Landsize'] = st.number_input("Land size (sqm)", min_value=0.0, value=500.0)
-feature_inputs['BuildingArea'] = st.number_input("Building area (sqm)", min_value=0.0, value=150.0)
-
-# Process categorical variables here similarly based on your training data
-
-# Preprocess input and predict
-if st.button("Predict House Price"):
-    input_df = pd.DataFrame([feature_inputs])
-    input_scaled = scaler.transform(input_df)
-    price_pred = model.predict(input_scaled)[0][0]
-    
-    st.write(f"Predicted Price: ${price_pred:,.2f}")
-
-# Show Sample Predictions from Test Set
-uploaded_file = st.file_uploader("Or Upload a CSV file for batch prediction", type="csv")
-if uploaded_file:
-    df = pd.read_csv(uploaded_file)
-    # Preprocess and predict as in your original code
-
-
-# Title and File Upload
-st.title("House Price Prediction App")
-
 # ฟอร์มสำหรับการพยากรณ์
 st.subheader("กรอกข้อมูลเกี่ยวกับอสังหาริมทรัพย์เพื่อการพยากรณ์:")
 feature_inputs = {}
