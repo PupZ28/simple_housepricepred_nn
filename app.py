@@ -77,9 +77,9 @@ feature_inputs['CouncilArea'] = st.selectbox("เขตปกครอง", opti
   'Yarra Ranges Shire Council', 'Wyndham City Council',
   'Moorabool Shire Council', 'Mitchell Shire Council'
   ])
-  feature_inputs['Latitude'] = st.number_input("ละติจูด", value=17.0)
-  feature_inputs['Longtitude'] = st.number_input("ลองติจูด", value=150.0)
-  feature_inputs['Regionname'] = st.selectbox("ชื่อภูมิภาค", options=[
+feature_inputs['Latitude'] = st.number_input("ละติจูด", value=17.0)
+feature_inputs['Longtitude'] = st.number_input("ลองติจูด", value=150.0)
+feature_inputs['Regionname'] = st.selectbox("ชื่อภูมิภาค", options=[
   'Northern Metropolitan', 'Western Metropolitan',
   'Southern Metropolitan', 'Eastern Metropolitan',
   'South-Eastern Metropolitan', 'Eastern Victoria',
