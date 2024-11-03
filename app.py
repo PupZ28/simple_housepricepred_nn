@@ -240,10 +240,34 @@ feature_inputs['Age'] = st.number_input("อายุ", value = 30)
 
 # Preprocess input and predict
 if st.button("Predict House Price"):
-    input_df = pd.DataFrame([feature_inputs])
+    # 1. Create a Dummy DataFrame
+    try:
+        df_template = pd.read_csv("cleanhouse.csv").drop(columns=['Address', 'Date', 'Price'])
+        df_template = pd.get_dummies(df_template, columns=['Method', 'SellerG', 'CouncilArea', 'Regionname', 'Season', 'Suburb'], drop_first=True)
+        input_df = pd.DataFrame(0, index=np.arange(1), columns=df_template.columns)
+    except FileNotFoundError:
+        st.error("cleanhouse.csv not found. Please upload or create it.")
+        st.stop()
+
+    # 2. Populate the Dummy DataFrame
+    numerical_features = ['Rooms', 'Distance', 'Landsize', 'BuildingArea', 'Bathroom', 'Car', 'YearBuilt', 'Postcode','Latitude','Longtitude','Year','Month', 'Age']
+    for feature in numerical_features:
+        input_df[feature] = feature_inputs[feature]
+
+
+    categorical_features = ['Method', 'SellerG', 'CouncilArea', 'Regionname', 'Season', 'Suburb', 'Type']
+    for feature in categorical_features:
+        try: # Handle potential KeyError if a new category is selected
+            if feature == 'Type':
+                input_df[feature_inputs[feature].lower()] = 1
+            else:
+                input_df[f"{feature}_{feature_inputs[feature]}"] = 1  # One-hot encode
+        except KeyError:
+            pass  # or provide a default value/handle the error as needed
+
+    # 3. Scale and Predict
     input_scaled = scaler.transform(input_df)
     price_pred = model.predict(input_scaled)[0][0]
-    
     st.write(f"Predicted Price: ${price_pred:,.2f}")
 
 # Show Sample Predictions from Test Set
