@@ -17,7 +17,7 @@ def load_pipeline():
         model = joblib.load("model_pipeline.pkl")
     except:
         # การโหลดข้อมูลและการพรีโปรเซสซิ่ง
-        df = pd.read_csv("data.csv")  # เปลี่ยนเป็น path ของข้อมูลการเทรนที่ใช้
+        df = pd.read_csv("cleanhouse.csv")  # เปลี่ยนเป็น path ของข้อมูลการเทรนที่ใช้
         df = df.drop(columns=['Address', 'Date'])
         df = pd.get_dummies(df, columns=['Method', 'SellerG', 'CouncilArea', 'Regionname', 'Season', 'Suburb'], drop_first=True)
         y = df['Price']
