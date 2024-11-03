@@ -9,7 +9,7 @@ from sklearn.pipeline import Pipeline
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.callbacks import EarlyStopping
-from tensorflow.keras.wrappers.scikit_learn import KerasRegressor  # สำหรับ wrap Keras model
+from scikeras.wrappers import KerasRegressor
 from tensorflow.keras import backend as K
 
 def rmse(y_true, y_pred):
