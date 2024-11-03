@@ -250,7 +250,7 @@ if st.button("Predict House Price"):
         st.stop()
 
     # 2. Populate the Dummy DataFrame
-    numerical_features = ['Rooms', 'Distance', 'Landsize', 'BuildingArea', 'Bathroom', 'Car', 'YearBuilt', 'Postcode','Lattitude','Longtitude','Year','Month', 'Age', 'Typr']
+    numerical_features = ['Rooms', 'Distance', 'Landsize', 'BuildingArea', 'Bathroom', 'Car', 'YearBuilt', 'Postcode','Lattitude','Longtitude','Year','Month', 'Age', 'Type']
     for feature in numerical_features:
         input_df[feature] = feature_inputs[feature]
 
