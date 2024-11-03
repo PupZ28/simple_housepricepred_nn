@@ -16,7 +16,7 @@ def rmse(y_true, y_pred):
     return K.sqrt(K.mean(K.square(y_pred - y_true)))
 
 # สร้าง pipeline
-def create_pipeline(X_train):  # รับ X_train เป็น argument เพื่อหาขนาด input_dim
+def create_pipeline():  # รับ X_train เป็น argument เพื่อหาขนาด input_dim
     categorical_features = ['Method', 'SellerG', 'CouncilArea', 'Regionname', 'Season', 'Suburb', 'Type']
     numeric_features = ['Rooms', 'Distance', 'Bathroom', 'Car', 'Landsize', 'BuildingArea', 'YearBuilt', 'Lattitude', 'Longtitude', 'Propertycount', 'Age', 'Year', 'Month', 'Postcode']  # เพิ่ม features ที่เป็นตัวเลขทั้งหมด
 
