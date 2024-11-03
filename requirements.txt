@@ -1,3 +1,4 @@
+scikeras
 pandas
 numpy
 scikit-learn
