@@ -12,18 +12,6 @@ from tensorflow.keras.callbacks import EarlyStopping
 from scikeras.wrappers import KerasRegressor
 from tensorflow.keras import backend as K
 
-import streamlit as st
-import pandas as pd
-import numpy as np
-import joblib
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.callbacks import EarlyStopping
-from tensorflow.keras import backend as K
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, f1_score
-
 # Load or Train Model Pipeline
 @st.cache_resource
 def load_pipeline():
@@ -31,7 +19,7 @@ def load_pipeline():
         model = joblib.load("model_pipeline.pkl")
     except:
         # Data loading and preprocessing
-        df = pd.read_csv("data.csv")  # replace with your local training dataset path
+        df = pd.read_csv("cleanhouse.csv")  # replace with your local training dataset path
         df = df.drop(columns=['Address', 'Date'])
         df = pd.get_dummies(df, columns=['Method', 'SellerG', 'CouncilArea', 'Regionname', 'Season', 'Suburb'], drop_first=True)
         y = df['Price']
