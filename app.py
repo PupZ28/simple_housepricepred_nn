@@ -6,6 +6,10 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from tensorflow.keras.models import load_model
 import tensorflow.keras.backend as K
 
+# Define RMSE function (if not already defined)
+def rmse(y_true, y_pred):
+    return K.sqrt(K.mean(K.square(y_pred - y_true)))
+    
 # Load the trained model and scaler
 model = load_model('your_model.h5', custom_objects={'rmse': rmse}) # Replace 'your_model.h5'
 with open('scaler.pkl', 'rb') as f:
@@ -13,33 +17,29 @@ with open('scaler.pkl', 'rb') as f:
 
 cleanhouse = pd.read_csv('cleanhouse.csv') # Replace 'cleanhouse.csv'
 
-# Define RMSE function (if not already defined)
-def rmse(y_true, y_pred):
-    
-    return K.sqrt(K.mean(K.square(y_pred - y_true)))
+
 
 def predict_price(input_features, cleanhouse_df, model, scaler):
     """Predicts the price based on user inputs."""
-
+    
     input_df = pd.DataFrame([input_features])
 
     # Combine user input with cleanhouse data before one-hot encoding
     combined_df = pd.concat([cleanhouse_df, input_df], ignore_index=True)
 
-    categorical_cols = ['Method', 'SellerG', 'CouncilArea', 'Regionname', 'Season', 'Suburb', 'Type']  # Add 'Type' here
-    encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False) #sparse=False for newer scikit-learn versions
-
-    encoded_categoricals = encoder.fit_transform(combined_df[categorical_cols])
+    categorical_cols = ['Method', 'SellerG', 'CouncilArea', 'Regionname', 'Season', 'Suburb', 'Type']
+    encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
+    encoder.fit(cleanhouse_df[categorical_cols])  # Fit only on cleanhouse_df
+    encoded_categoricals = encoder.transform(combined_df[categorical_cols])
     encoded_df = pd.DataFrame(encoded_categoricals, columns=encoder.get_feature_names_out(categorical_cols))
 
     numerical_cols = ['Rooms', 'Distance', 'Landsize', 'BuildingArea', 'Bathroom', 'Car', 'YearBuilt',
-                      'Postcode', 'Latitude', 'Longtitude', 'Year', 'Month','Age'] # Add 'Age'
+                      'Postcode', 'Latitude', 'Longtitude', 'Year', 'Month', 'Age']
 
     combined_df = combined_df[numerical_cols].reset_index(drop=True)
     final_df = pd.concat([combined_df, encoded_df], axis=1)
 
-
-    input_data = final_df.iloc[[-1]].values # Get the last row (user input)
+    input_data = final_df.iloc[[-1]].values  # Get the last row (user input)
 
     # Scale numerical features using the trained scaler
     input_data_scaled = scaler.transform(input_data)
@@ -47,6 +47,7 @@ def predict_price(input_features, cleanhouse_df, model, scaler):
     predicted_price = model.predict(input_data_scaled)[0][0]
 
     return predicted_price
+
 
 # Streamlit app
 st.title("Melbourne Housing Price Prediction")
