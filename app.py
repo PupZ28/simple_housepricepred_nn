@@ -95,7 +95,7 @@ feature_inputs['Regionname'] = st.selectbox("ชื่อภูมิภาค",
 feature_inputs['Season'] = st.selectbox("ฤดูกาล", options=["Spring", "Summer", "Autumn", "Winter"])
 feature_inputs['Year'] = st.number_input("ปี", min_value=2000, max_value=2024, value=2024)
 feature_inputs['Month'] = st.number_input("เดือน", min_value=1, max_value=12, value=1)
-feature_inputs['Type'] = st.selectbox("ประเภทอสังหาริมทรัพย์", options=["House", "Unit", "Townhouse", "Apartment", "Others"])
+feature_inputs['Type'] = st.selectbox("ประเภทอสังหาริมทรัพย์", options=[0,1,2])
 feature_inputs['Method'] = st.selectbox("วิธีขาย", options=['SS', 'S', 'SP', 'PI', 'VB', 'SN', 'W', 'PN', 'SA'])
 feature_inputs['Suburb'] = st.selectbox("ชื่อชุมชน", options=['Abbotsford', 'Airport West', 'Albert Park', 'Alphington',
        'Altona', 'Altona North', 'Armadale', 'Ascot Vale', 'Ashburton',
