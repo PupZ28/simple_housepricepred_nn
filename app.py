@@ -4,6 +4,7 @@ import numpy as np
 import pickle
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from tensorflow.keras.models import load_model
+import tensorflow.keras.backend as K
 
 # Load the trained model and scaler
 model = load_model('your_model.h5', custom_objects={'rmse': rmse}) # Replace 'your_model.h5'
@@ -14,7 +15,7 @@ cleanhouse = pd.read_csv('cleanhouse.csv') # Replace 'cleanhouse.csv'
 
 # Define RMSE function (if not already defined)
 def rmse(y_true, y_pred):
-    import tensorflow.keras.backend as K
+    
     return K.sqrt(K.mean(K.square(y_pred - y_true)))
 
 def predict_price(input_features, cleanhouse_df, model, scaler):
