@@ -46,7 +46,7 @@ def create_pipeline(X_train):  # รับ X_train เป็น argument เพ�
 
     pipeline = Pipeline([
         ('preprocessor', preprocessor),
-        ('regressor', keras_regressor)
+        ('regressor', None)
     ])
     return pipeline
 
@@ -60,12 +60,15 @@ def load_or_train_pipeline():
         df_train = pd.read_csv("cleanhouse.csv")
         df_train = df_train.drop(columns=['Address', 'Date', 'Price'])
         X_train = df_train
-        pipeline = create_pipeline(X_train)
 
         y = pd.read_csv("cleanhouse.csv")['Price']
 
-        X_train, X_test, y_train, y_test = train_test_split(X_train, y, test_size=0.2, random_state=0)
-
+        # X_train, X_test, y_train, y_test = train_test_split(X_train, y, test_size=0.2, random_state=0)
+        pipeline = create_pipeline()
+        X_train_transformed = pipeline.named_steps['preprocessor'].fit_transform(X_train)
+        input_dim = X_train_transformed.shape[1]
+        keras_regressor = KerasRegressor(build_fn=lambda: create_model(input_dim=input_dim))  # สร้าง regressor ที่นี่!
+        pipeline.set_params(regressor=keras_regressor)  # แทรก regressor เข้าไปใน pipeline
         pipeline.fit(X_train, y_train, regressor__validation_split=0.2, regressor__epochs=100, regressor__batch_size=32,
                    regressor__callbacks=[EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)])
 
@@ -109,6 +112,8 @@ feature_inputs['CouncilArea'] = st.selectbox("เขตปกครอง", opti
        'Yarra Ranges Shire Council', 'Wyndham City Council',
        'Moorabool Shire Council', 'Mitchell Shire Council'
 ])
+feature_inputs['Latitude'] = st.number_input("ละติจูด", value=17.0)
+feature_inputs['Longtitude'] = st.number_input("ลองติจูด", value=150.0)
 feature_inputs['Regionname'] = st.selectbox("ชื่อภูมิภาค", options=[
     'Northern Metropolitan', 'Western Metropolitan',
        'Southern Metropolitan', 'Eastern Metropolitan',
@@ -259,6 +264,7 @@ feature_inputs['SellerG'] = st.st.selectbox("ชื่อผู้ขาย", op
        'hockingstuart/Marshall', 'McGrath/First', 'Spencer',
        'voglwalpole', 'Watermark', 'Methven'
 ])  # ใช้ชื่อผู้ขายตามที่ต้องการ
+feature_inputs['Age'] = st.number_input("อายุ", value = 30)
 
 if st.button("ทำนายราคาบ้าน"):
     input_df = pd.DataFrame([feature_inputs])  # สร้าง DataFrame จาก input
