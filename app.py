@@ -250,12 +250,12 @@ if st.button("Predict House Price"):
         st.stop()
 
     # 2. Populate the Dummy DataFrame
-    numerical_features = ['Rooms', 'Distance', 'Landsize', 'BuildingArea', 'Bathroom', 'Car', 'YearBuilt', 'Postcode','Lattitude','Longtitude','Year','Month', 'Age']
+    numerical_features = ['Rooms', 'Distance', 'Landsize', 'BuildingArea', 'Bathroom', 'Car', 'YearBuilt', 'Postcode','Lattitude','Longtitude','Year','Month', 'Age', 'Typr']
     for feature in numerical_features:
         input_df[feature] = feature_inputs[feature]
 
 
-    categorical_features = ['Method', 'SellerG', 'CouncilArea', 'Regionname', 'Season', 'Suburb', 'Type']
+    categorical_features = ['Method', 'SellerG', 'CouncilArea', 'Regionname', 'Season', 'Suburb']
     for feature in categorical_features:
         try: # Handle potential KeyError if a new category is selected
             if feature == 'Type':
