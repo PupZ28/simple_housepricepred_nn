@@ -176,7 +176,7 @@ feature_inputs['Suburb'] = st.selectbox("ชื่อชุมชน", options=[
        'Cranbourne West', 'Clyde North', 'Wandin North', 'Lysterfield',
        'Kalkallo', 'Werribee South'
 ])  # ใช้ชื่อชุมชนตามที่ต้องการ
-feature_inputs['SellerG'] = st.st.selectbox("ชื่อผู้ขาย", options=['Jellis', 'Biggin', 'Nelson', 'Collins', 'Philip', 'LITTLE', 'Kay',
+feature_inputs['SellerG'] = st.selectbox("ชื่อผู้ขาย", options=['Jellis', 'Biggin', 'Nelson', 'Collins', 'Philip', 'LITTLE', 'Kay',
        'Marshall', 'Brad', 'Maddison', 'Barry', 'Considine', 'Rendina',
        'Propertyau', 'McDonald', 'Prof.', 'Harcourts', 'hockingstuart',
        'Thomson', 'Buxton', 'Greg', 'RT', "Sotheby's", 'Cayzer',
